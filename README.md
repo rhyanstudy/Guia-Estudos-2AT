@@ -18,7 +18,7 @@ Aqui transformamos ideias em realidade ensinando o computador a pensar.
 | :--- | :--- | :--- | :--- | :---: |
 | **01** | Algoritmos e Fluxogramas | [Ler Roteiro](./Logica_de_Programacao/Aula_01/roteiro.md) | [Acessar Apresentação](https://SEU_USUARIO.github.io/NOME_DO_REPO/Logica_de_Programacao/Aula_01/painel.html) | ✅ |
 | **02** | Variáveis e Ficha de RPG | [Ler Roteiro](./Logica_de_Programacao/Aula_02/roteiro.md) | [Acessar Apresentação](https://SEU_USUARIO.github.io/NOME_DO_REPO/Logica_de_Programacao/Aula_02/painel_rpg.html) | ✅ |
-| **03** | Inteligência e If/Else | [Ler Roteiro](./Logica_de_Programacao/Aula_03/roteiro.md) | [Acessar Apresentação](https://github.com/rhyanstudy/Guia-Estudos-2AT/LLP/Aula_03/Desafio_02.html) | ✅ |
+| **03** | Inteligência e If/Else | [Ler Roteiro](./Logica_de_Programacao/Aula_03/roteiro.md) | [Acessar Apresentação](https://github.com/rhyanstudy/Guia-Estudos-2AT/blob/main/LLP/Aula_03/Desafio_02.html) | ✅ |
 | **04** | Laços de Repetição (While) | Em breve... | Em breve... | ⏳ |
 
 ---
