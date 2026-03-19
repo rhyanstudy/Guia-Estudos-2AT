@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio RPG - Python</title>
+    <style>
+        :root {
+            --bg-color: #1a1a24;
+            --text-main: #e2e2ed;
+            --level1: #4ade80; /* Verde */
+            --level2: #60a5fa; /* Azul */
+            --level3: #fbbf24; /* Amarelo */
+            --level4: #f87171; /* Vermelho */
+            --panel-bg: #282836;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            padding: 20px 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: #a1a1aa;
+            margin-top: 5px;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+        }
+
+        /* Área dos Cards de Nível */
+        .levels-grid {
+            flex: 3;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            border-top: 5px solid;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card ul, .card p {
+            font-size: 1.35rem;
+            line-height: 1.5;
+            color: #d4d4d8;
+        }
+
+        .card ul {
+            padding-left: 25px;
+        }
+
+        .card li {
+            margin-bottom: 8px;
+        }
+
+        .card code {
+            background-color: #000;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+        }
+
+        .card.l1 { border-color: var(--level1); }
+        .card.l1 h2 { color: var(--level1); }
+
+        .card.l2 { border-color: var(--level2); }
+        .card.l2 h2 { color: var(--level2); }
+
+        .card.l3 { border-color: var(--level3); }
+        .card.l3 h2 { color: var(--level3); }
+
+        .card.l4 { border-color: var(--level4); }
+        .card.l4 h2 { color: var(--level4); }
+
+        /* Área da Legenda Lateral */
+        .legend-sidebar {
+            flex: 1;
+            background-color: #1e1e29;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px dashed #4b4b5c;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .legend-sidebar h3 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #4b4b5c;
+            padding-bottom: 10px;
+        }
+
+        .legend-item {
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+        }
+
+        .op-badge {
+            display: inline-block;
+            background-color: #3f3f4e;
+            color: #38bdf8;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1.6rem;
+            padding: 5px 15px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .legend-desc {
+            color: #a1a1aa;
+            display: block;
+            margin-left: 5px;
+        }
+
+        .tip-box {
+            margin-top: auto;
+            background-color: rgba(251, 191, 36, 0.1);
+            border-left: 4px solid var(--level3);
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚔️ Desafio: O Criador de Personagens</h1>
+        <p>Avançe nos níveis no seu próprio ritmo. Terminou um nível? Chame o professor!</p>
+    </header>
+
+    <div class="main-container">
+        <!-- Cards de Níveis -->
+        <div class="levels-grid">
+            
+            <div class="card l1">
+                <h2>🟢 Nível 1: Registro na Guilda</h2>
+                <p>Crie o início do seu jogo:</p>
+                <ul>
+                    <li>Pergunte o <strong>Nome</strong> do herói.</li>
+                    <li>Pergunte a <strong>Classe</strong> dele (Mago, Hacker, etc).</li>
+                    <li>Use <code>print()</code> para dar as boas-vindas juntando as variáveis. Ex: <em>"Bem-vindo, [Nome]! Bravo [Classe]!"</em></li>
+                </ul>
+            </div>
+
+            <div class="card l2">
+                <h2>🔵 Nível 2: Cálculo de Atributos</h2>
+                <p>Todo herói precisa de atributos matemáticos:</p>
+                <ul>
+                    <li>Pergunte o <strong>Nível</strong> (Lembre de usar <code>int</code>).</li>
+                    <li>O computador deve calcular: <br>
+                        <strong>HP</strong> = Nível multiplicado por 50<br>
+                        <strong>Mana</strong> = Nível multiplicado por 30
+                    </li>
+                    <li>Imprima os resultados na tela.</li>
+                </ul>
+            </div>
+
+            <div class="card l3">
+                <h2>🟡 Nível 3: A Loja de Poções</h2>
+                <p>Trabalhando com dinheiro (Decimais):</p>
+                <ul>
+                    <li>Crie uma variável <strong>Ouro</strong> valendo <code>100.50</code>.</li>
+                    <li>Pergunte: <em>"Quantas poções quer comprar?"</em></li>
+                    <li>Cada poção custa exatamente <strong>12.30</strong>.</li>
+                    <li>Calcule o gasto, subtraia do Ouro inicial e imprima o troco do herói!</li>
+                </ul>
+            </div>
+
+            <div class="card l4">
+                <h2>🔴 Nível 4: A Ficha (Chefão Final)</h2>
+                <p>O cálculo está certo, mas a tela está feia. Seu desafio:</p>
+                <ul>
+                    <li>Use a multiplicação de strings para criar linhas separadoras. Ex: <code>print("=" * 30)</code>.</li>
+                    <li>Formate todas as informações dos níveis 1, 2 e 3 em um <strong>Painel Bonito</strong> no terminal, organizando os textos e alinhando os valores.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Legenda Python -->
+        <div class="legend-sidebar">
+            <h3>🐍 Guia Rápido Python</h3>
+            
+            <div class="legend-item">
+                <span class="op-badge">=</span>
+                <span class="legend-desc">Guarda o valor na variável. (Recebe)</span>
+            </div>
+
+            <div class="legend-item">
+                <span class="op-badge">+</span>
+                <span class="legend-desc">Soma números OU junta textos.</span>
+            </div>
+
+            <div class="legend-item">
+                <span class="op-badge">- &nbsp; * &nbsp; /</span>
+                <span class="legend-desc">Subtrai, Multiplica e Divide.</span>
+            </div>
+
+            <div class="legend-item">
+                <span class="op-badge">int()</span>
+                <span class="legend-desc">Transforma texto em número Inteiro.</span>
+            </div>
+
+            <div class="legend-item">
+                <span class="op-badge">float()</span>
+                <span class="legend-desc">Transforma texto em Decimal. (Usa PONTO)</span>
+            </div>
+
+            <div class="tip-box">
+                <strong>💡 Dica de Ouro:</strong><br>
+                O <code>input()</code> sempre recebe um texto. Se quiser fazer conta, precisa envelopar ele! <br><br>Ex: <code>idade = int(input("Idade: "))</code>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topologias de Rede: O Mapa dos Dados</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --accent-cyan: #00e5ff;
+            --accent-orange: #ff9100;
+            --accent-green: #00e676;
+            --accent-red: #ff1744;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 10%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            color: var(--accent-cyan);
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+        }
+
+        h2 {
+            font-size: 3rem;
+            color: var(--accent-orange);
+            margin-bottom: 25px;
+            width: 100%;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        p, li {
+            font-size: 1.6rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #bdbdbd;
+        }
+
+        ul { padding-left: 30px; width: 100%; }
+
+        .content-box {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 1100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border-left: 5px solid var(--accent-cyan);
+        }
+
+        .highlight {
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        .alert-box {
+            background-color: rgba(255, 23, 68, 0.1);
+            border-left: 5px solid var(--accent-red);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .success-box {
+            background-color: rgba(0, 230, 118, 0.1);
+            border-left: 5px solid var(--accent-green);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        /* Desenhos CSS Simples para Topologias */
+        .topology-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #000;
+            border-radius: 8px;
+            min-height: 200px;
+        }
+
+        /* Estrela */
+        .star-net { position: relative; width: 200px; height: 200px; }
+        .node-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: var(--accent-orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; z-index: 2; }
+        .node-pc { position: absolute; width: 40px; height: 40px; background: var(--accent-cyan); border-radius: 50%; z-index: 2; display: flex; align-items: center; justify-content: center; color: #000; font-weight: bold; font-size: 0.8rem;}
+        .star-line { position: absolute; top: 50%; left: 50%; width: 50%; height: 2px; background: #555; transform-origin: left center; z-index: 1; }
+
+        /* Controles */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 100;
+        }
+        button {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid #444;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover:not(:disabled) {
+            background-color: var(--accent-cyan);
+            color: #000;
+            font-weight: bold;
+        }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0; height: 5px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-orange));
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        .challenge-box { border-left-color: var(--accent-orange); }
+        .challenge-box h2 { color: var(--accent-orange); border-color: var(--accent-orange); }
+
+        code { background: #333; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: var(--accent-green);}
+
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+
+    <div class="slider-container" id="slider">
+
+        <!-- Slide 1: O que é -->
+        <div class="slide active">
+            <div class="content-box">
+                <h1>🌐 Topologia de Redes</h1>
+                <p style="text-align: center; font-size: 2rem; color: #888; margin-bottom: 40px;">Entendendo os Mapas de Dados</p>
+                <p>O que acontece quando você envia uma mensagem no WhatsApp? Como o arquivo acha o caminho até o servidor?</p>
+                <p><strong><span class="highlight">Topologia de Rede</span></strong> é o "mapa das ruas". É o desenho de como os computadores estão interligados e de como a informação viaja entre eles.</p>
+                <div class="alert-box" style="background: rgba(0, 229, 255, 0.1); border-color: var(--accent-cyan);">
+                    <strong>A Grande Regra:</strong> Um mapa ruim gera trânsito (lentidão) e acidentes (colisão de dados).
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Lógica vs Física -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>Física vs Lógica 🧠</h2>
+                <p>Existem duas formas de olhar para uma rede:</p>
+                <ul>
+                    <li><strong>Topologia FÍSICA:</strong> Onde o cabo passa. É o desenho real que o eletricista ou técnico faz na parede. <em>"O cabo sai do PC 1 e entra no Hub."</em></li>
+                    <li style="margin-top: 15px;"><strong>Topologia LÓGICA:</strong> Como a água flui pelo cano. É como o dado viaja invisivelmente, independente de como o cabo está dobrado.</li>
+                </ul>
+                <p style="margin-top: 20px;">Você pode ter uma rede ligada de uma forma física, mas que se comporta de outra forma lógica por dentro dos equipamentos!</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Barramento -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>1. Topologia em Barramento (Bus) 🚌</h2>
+                <p>A mais antiga. Um único cabo central longo (O <em>Backbone</em> ou Espinha Dorsal) e todos os PCs pendurados nele.</p>
+                <ul>
+                    <li><strong>Como fala:</strong> Todo mundo grita no mesmo cabo. Todos ouvem tudo.</li>
+                    <li><strong>Vantagem:</strong> Muito barata (usa pouco cabo).</li>
+                </ul>
+                <div class="alert-box">
+                    <strong>A Queda:</strong> Se o cabo principal arrebentar no meio, a rede inteira para. Além disso, se dois PCs falarem ao mesmo tempo, gera <span class="highlight" style="color: var(--accent-red);">Colisão</span> (a rede trava).
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Anel -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>2. Topologia em Anel (Ring) ⭕</h2>
+                <p>Para resolver as colisões do Barramento, fecharam os PCs em um círculo. A mensagem só viaja em um sentido (ex: sentido horário).</p>
+                <ul>
+                    <li><strong>A Solução Mágica:</strong> O <em>Token</em> (A Ficha). Só pode transmitir dados o computador que estiver segurando a "Ficha" eletrônica. Acabou o caos!</li>
+                </ul>
+                <div class="alert-box">
+                    <strong>A Queda:</strong> Como a rede é um círculo vicioso, se um PC desligar, ou se o cabo romper entre duas máquinas, o ciclo quebra e <strong>NINGUÉM mais navega</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Estrela -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>3. Topologia em Estrela (Star) ⭐</h2>
+                <p>O Padrão Ouro moderno. Todos os computadores ligam um cabo individual até uma caixa central inteligente (O Switch).</p>
+                
+                <div class="topology-diagram">
+                    <div class="star-net">
+                        <div class="node-center">SW</div>
+                        <div class="star-line" style="transform: rotate(0deg) translateX(30px);"></div>
+                        <div class="node-pc" style="top: 50%; right: -20px; transform: translateY(-50%);">PC</div>
+                        
+                        <div class="star-line" style="transform: rotate(120deg) translateX(30px);"></div>
+                        <div class="node-pc" style="top: -10px; left: 10px;">PC</div>
+                        
+                        <div class="star-line" style="transform: rotate(240deg) translateX(30px);"></div>
+                        <div class="node-pc" style="bottom: -10px; left: 10px;">PC</div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <strong>A Vantagem Suprema:</strong> Se o cabo do PC-1 romper, os outros continuam trabalhando normalmente. (A falha é isolada).
+                </div>
+                <p style="font-size: 1.2rem; color: #888;">Desvantagem: Gasta muito cabo e, se o Switch central queimar, tudo para.</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: O Desafio -->
+        <div class="slide">
+            <div class="content-box challenge-box">
+                <h2>🛠️ MISSÃO: O Arquiteto de Redes</h2>
+                <p>Abra o navegador e acesse: <code>app.diagrams.net</code> (Draw.io)</p>
+                <p>Crie um Diagrama em Branco. Sua missão é desenhar uma <strong>Topologia Híbrida (Árvore)</strong>, PESQUISE EXEMPLOS:</p>
+                <ol style="margin-top: 15px; margin-bottom: 20px; padding-left: 20px;">
+                    <li>Crie o <strong>Laboratório A</strong>: Desenhe uma topologia em <strong>Estrela</strong> com 4 PCs ligados a 1 Switch.</li>
+                    <li>Crie o <strong>Laboratório B</strong>: Desenhe outra topologia em <strong>Estrela</strong> com 4 PCs ligados a outro Switch.</li>
+                    <li><strong>A Fusão:</strong> Desenhe um cabo grosso conectando o Switch do Lab A ao Switch do Lab B (Isso representa um <strong>Barramento</strong> ligando as duas estrelas!).</li>
+                    <li><strong>Coloque Legendas em cada Topologia para representar seu tipo</strong></li>
+                </ol>
+                <p>Use a barra de pesquisa na esquerda do Draw.io e digite "Computer" e "Switch" para achar ícones bonitos!</p>
+                <p style="margin-top: 15px; color: var(--accent-orange); font-weight: bold;">Salve o arquivo e envie para o professor.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="controls">
+        <button id="btnPrev">Anterior</button>
+        <button id="btnNext">Próximo</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const btnNext = document.getElementById('btnNext');
+        const btnPrev = document.getElementById('btnPrev');
+        const progressBar = document.getElementById('progressBar');
+        let currentSlide = 0;
+
+        function updateSlider() {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide].classList.add('active');
+            btnPrev.disabled = currentSlide === 0;
+            btnNext.disabled = currentSlide === slides.length - 1;
+            progressBar.style.width = `${(currentSlide / (slides.length - 1)) * 100}%`;
+        }
+
+        btnNext.addEventListener('click', () => { if (currentSlide < slides.length - 1) { currentSlide++; updateSlider(); } });
+        btnPrev.addEventListener('click', () => { if (currentSlide > 0) { currentSlide--; updateSlider(); } });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') btnNext.click();
+            if (e.key === 'ArrowLeft') btnPrev.click();
+        });
+
+        updateSlider();
+    </script>
+</body>
+</html>

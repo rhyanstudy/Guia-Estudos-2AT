@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Inteligência do Código - Python</title>
+    <style>
+        :root {
+            --bg-dark: #111827;
+            --bg-card: #1f2937;
+            --text-main: #f3f4f6;
+            --accent: #3b82f6; /* Azul */
+            --accent-green: #10b981;
+            --accent-pink: #ec4899;
+            --accent-yellow: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Container dos Slides */
+        .slider-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 80px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* Tipografia e Elementos do Slide */
+        h1 {
+            font-size: 4.5rem;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        h2 {
+            font-size: 3.5rem;
+            color: var(--accent-green);
+            margin-bottom: 30px;
+            width: 100%;
+            text-align: left;
+            border-bottom: 3px solid #374151;
+            padding-bottom: 15px;
+        }
+
+        p, li {
+            font-size: 1.8rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #d1d5db;
+        }
+
+        ul {
+            width: 100%;
+            padding-left: 40px;
+        }
+
+        .content-box {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #374151;
+        }
+
+        /* Otimização específica para o slide de Dashboard */
+        .dashboard-box {
+            max-width: 1400px; /* Mais largo para caber o dashboard */
+            padding: 25px;
+            height: 85vh; /* Usa a maior parte da altura do ecrã */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Códigos */
+        pre {
+            background-color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--accent-pink);
+            overflow-x: auto;
+            margin-top: 20px;
+            font-size: 1.6rem;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #6ee7b7;
+        }
+
+        .highlight {
+            color: var(--accent-pink);
+            font-weight: bold;
+            background-color: rgba(236, 72, 153, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Tabela de Operadores */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #4b5563;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.6rem;
+        }
+        
+        th { background-color: #374151; color: var(--accent-yellow); }
+        td code { font-size: 2rem; color: #fff; background: #111; padding: 5px 10px; border-radius: 5px;}
+
+        /* Controles */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+            z-index: 100;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        button:hover { background-color: #2563eb; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        button:disabled { background-color: #4b5563; cursor: not-allowed; transform: none; }
+
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 6px;
+            background-color: var(--accent-green);
+            transition: width 0.3s;
+            z-index: 100;
+        }
+
+        /* --- ESTILOS DO PAINEL DASHBOARD (SLIDE 7) --- */
+        .challenge-board {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr; /* Mais espaço para os níveis */
+            gap: 20px;
+            flex: 1; /* Ocupa o resto do espaço disponível */
+        }
+        .levels-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Grelha 2x2 perfeita */
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+        }
+        .level-card {
+            background: #111827;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-top: 5px solid; /* Borda no topo para poupar espaço horizontal */
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .level-card h3 { 
+            font-size: 1.5rem; 
+            margin-bottom: 8px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .level-card p { 
+            font-size: 1.15rem; 
+            margin-bottom: 5px; 
+            color: #cbd5e1; 
+            line-height: 1.4; 
+        }
+        .level-card code {
+            font-size: 1.1rem;
+            padding: 2px 5px;
+        }
+        .level-card.l1 { border-color: var(--accent-green); }
+        .level-card.l2 { border-color: var(--accent); }
+        .level-card.l3 { border-color: var(--accent-yellow); }
+        .level-card.l4 { border-color: var(--accent-pink); }
+        
+        .legend-col {
+            background: #111827;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #4b5563;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .legend-col h3 { 
+            font-size: 1.5rem; 
+            color: #fff; 
+            margin-bottom: 15px; 
+            text-align: center; 
+            border-bottom: 1px solid #374151; 
+            padding-bottom: 10px; 
+        }
+        .legend-item { 
+            margin-bottom: 15px; 
+            font-size: 1.2rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .op-badge { 
+            background: #374151; 
+            color: var(--accent-green); 
+            font-family: monospace; 
+            font-weight: bold; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 1.3rem; 
+            min-width: 45px; 
+            text-align: center; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress" id="progressBar" style="width: 0%;"></div>
+
+    <div class="slider-container" id="slider">
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <h1>🧠 A Inteligência do Código</h1>
+            <p style="font-size: 2.2rem; text-align: center; color: #9ca3af;">Ensinando o computador a tomar decisões</p>
+            <p style="text-align: center; margin-top: 50px; font-size: 1.2rem; color: #4b5563;">Use as setas do teclado para avançar ➔</p>
+        </div>
+
+        <!-- Slide 2: Operadores Matemáticos -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>1. Comparadores Matemáticos. 🧮</h2>
+                <p>Nós já vimos que o Python é uma calculadora gigante. Aqui estão as ferramentas:</p>
+                <table>
+                    <tr>
+                        <th width="20%">Operador</th>
+                        <th>O que faz?</th>
+                    </tr>
+                    <tr><td><code>+ - *</code></td><td>Soma, Subtrai, Multiplica</td></tr>
+                    <tr><td><code>/</code></td><td>Divisão Exata (Ex: <code>10 / 3 = 3.33</code>)</td></tr>
+                    <tr><td><code>//</code></td><td>Divisão Inteira (Corta a vírgula. Ex: <code>10 // 3 = 3</code>)</td></tr>
+                    <tr><td><code>%</code></td><td>O Resto da Divisão (Ex: <code>10 % 3 = 1</code>)</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 3: Operadores de Comparação -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>2. Operadores de Comparação ⚖️</h2>
+                <p>Para tomar decisões, o computador precisa COMPARAR informações. Ele só responde <strong>True (Verdadeiro)</strong> ou <strong>False (Falso)</strong>.</p>
+                <table>
+                    <tr>
+                        <th>Símbolo</th>
+                        <th>Significado</th>
+                        <th>Exemplo Real</th>
+                    </tr>
+                    <tr><td><code>==</code></td><td>Exatamente Igual</td><td><code>senha == "1234"</code></td></tr>
+                    <tr><td><code>!=</code></td><td>Diferente (Não Igual)</td><td><code>nome != "Hacker"</code></td></tr>
+                    <tr><td><code>></code> ou <code><</code></td><td>Maior / Menor</td><td><code>vida > 0</code></td></tr>
+                    <tr><td><code>>=</code> ou <code><=</code></td><td>Maior Igual / Menor Igual</td><td><code>idade >= 18</code></td></tr>
+                </table>
+                <p style="margin-top: 20px; color: var(--accent-pink); font-weight: bold;">⚠️ ATENÇÃO: Um igual (=) GUARDA. Dois iguais (==) COMPARA!</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Operadores Lógicos -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>3. Operadores Lógicos 🛡️</h2>
+                <p>Às vezes uma condição só não basta. Precisamos combinar regras.</p>
+                <ul>
+                    <li><span class="highlight">and</span> (E): Rígido. <strong>TUDO</strong> tem que ser verdade.
+                        <br><span style="font-size: 1.4rem; color: gray;">Ex: <code>idade >= 18 and tem_ingresso == True</code></span>
+                    </li>
+                    <li style="margin-top: 20px;"><span class="highlight">or</span> (OU): Flexível. <strong>Pelo menos UM</strong> tem que ser verdade.
+                        <br><span style="font-size: 1.4rem; color: gray;">Ex: <code>dia == "Sábado" or dia == "Domingo"</code></span>
+                    </li>
+                    <li style="margin-top: 20px;"><span class="highlight">not</span> (NÃO): Contrário. Inverte a verdade.
+                        <br><span style="font-size: 1.4rem; color: gray;">Ex: <code>not chovendo</code> (Se não estiver chovendo...)</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 5: Indentação -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>4. Indentação 📏</h2>
+                <p>O Python precisa saber quais comandos pertencem a quais decisões. Ele faz isso através do <strong>(TAB)</strong>.</p>
+                <pre><code>
+<span style="color: gray;"># O comando de baixo só acontece SE o de cima for verdade</span>
+<span style="color: #60a5fa;">if</span> chovendo == True<span style="color: var(--accent-pink); font-weight: bold;">:</span>
+    <span style="color: gray;"># Esse espaço (TAB) significa que o print está DENTRO do if</span>
+    print("Pegue o guarda-chuva!")
+
+print("Vou sair de casa.") <span style="color: gray;"># Sem espaço = Fora do if. Vai rodar sempre.</span>
+                </code></pre>
+                <p><strong>A Regra:</strong> Toda vez que tiver <span class="highlight">:</span> (dois pontos), a próxima linha <strong>DEVE</strong> ter um Tab (espaço).</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: O Condicional (If Else) -->
+        <div class="slide">
+            <div class="content-box">
+                <h2>5. Condicional (If, Elif, Else) 🔀</h2>
+                <p>É assim que o computador pensa, lê-se de cima para baixo:</p>
+                <ul>
+                    <li><strong><code>if</code> (SE):</strong> A primeira pergunta. Plano A</li>
+                    <li><strong><code>elif</code> (SENÃO, SE):</strong> O plano B. Só testa se o <code>if</code> falhar.</li>
+                    <li><strong><code>else</code> (SENÃO):</strong> O plano Z. Se tudo der errado, faça isso (Não leva condição!).</li>
+                </ul>
+<pre><code>
+idade = 15
+
+<span style="color: #60a5fa;">if</span> idade >= 18:
+    print("Bem-vindo ao Bar!")
+<span style="color: #60a5fa;">elif</span> idade >= 16:
+    print("Você pode entrar, mas só bebe suco.")
+<span style="color: #60a5fa;">else</span>:
+    print("Volte para casa.")
+</code></pre>
+            </div>
+        </div>
+
+        <!-- Slide 7: Desafio Final DASHBOARD 2x2 -->
+        <div class="slide">
+            <div class="content-box dashboard-box" style="border-color: var(--accent-yellow);">
+                <h2 style="color: var(--accent-yellow); border-bottom-color: #4b5563; margin-bottom: 15px; font-size: 2.5rem;">⚔️ PAINEL DE MISSÕES: CAÇA AOS BUGS</h2>
+                
+                <div class="challenge-board">
+                    <!-- Coluna dos Níveis: Grelha 2x2 sem scroll -->
+                    <div class="levels-col">
+                        <div class="level-card l1">
+                            <h3 style="color: var(--accent-green);">🟢 Nível 1: Limite de Nível</h3>
+                            <p>O jogador pode digitar que é Nível 1000 ou -5.</p>
+                            <p>Use <code>if/else</code> e operadores lógicos para garantir que o nível fique apenas entre <strong>1 e 100</strong>. Se ele digitar fora disso, dê uma bronca e defina o nível dele como 1.</p>
+                        </div>
+                        
+                        <div class="level-card l2">
+                            <h3 style="color: var(--accent);">🔵 Nível 2: O Caloteiro</h3>
+                            <p>A loja vende fiado! Envolva o cálculo da poção com um <code>if/else</code>.</p>
+                            <p>O herói só pode comprar e subtrair o dinheiro <strong>SE</strong> o ouro dele for maior ou igual ao custo total. Senão, recuse a venda!</p>
+                        </div>
+
+                        <div class="level-card l3">
+                            <h3 style="color: var(--accent-yellow);">🟡 Nível 3: O Hacker das Poções</h3>
+                            <p>E se o herói digitar que quer comprar "-10 poções"? A matemática vai somar dinheiro para ele!</p>
+                            <p>Use um <code>if</code> antes da loja para verificar se a quantidade de poções é <strong>maior que 0</strong>.</p>
+                        </div>
+
+                        <div class="level-card l4">
+                            <h3 style="color: var(--accent-pink);">🔴 Nível 4: O Combate Final</h3>
+                            <p>No final do código, imprima: <em>"Um monstro apareceu! 1-Atacar, 2-Magia, 3-Fugir"</em>.</p>
+                            <p>Use <strong>If/Elif/Else</strong>. Se 1: Dano. Se 2: Use um <code>if</code> interno! Só lança magia <strong>se</strong> a Mana >= 20. Se 3: Foge. Else: Ação inválida.</p>
+                        </div>
+                    </div>
+
+                    <!-- Coluna da Legenda Lateral -->
+                    <div class="legend-col">
+                        <h3>🐍 Guia Rápido Python</h3>
+                        
+                        <div class="legend-item">
+                            <span class="op-badge">==</span> <span style="color: #9ca3af;">Igual a</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="op-badge">!=</span> <span style="color: #9ca3af;">Diferente de</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="op-badge">< ></span> <span style="color: #9ca3af;">Menor / Maior</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="op-badge"><= >=</span> <span style="color: #9ca3af;">Menor/Maior Igual</span>
+                        </div>
+                        <hr style="border: 1px dashed #374151; margin: 15px 0; width: 100%;">
+                        <div class="legend-item">
+                            <span class="op-badge" style="color: var(--accent-pink);">and</span> <span style="color: #9ca3af;">As <strong>duas</strong> condições são verdade</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="op-badge" style="color: var(--accent-pink);">or</span> <span style="color: #9ca3af;"><strong>Uma</strong> das condições é verdade</span>
+                        </div>
+                        <hr style="border: 1px dashed #374151; margin: 15px 0; width: 100%;">
+                        <p style="font-size: 1.1rem; color: #6ee7b7; text-align: center; margin-top: 10px;">
+                            💡 Não esqueça os dois pontos (:) e o TAB (espaço) depois do IF!
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="controls">
+        <button id="btnPrev">🡄 Anterior</button>
+        <button id="btnNext">Próximo 🡆</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const btnNext = document.getElementById('btnNext');
+        const btnPrev = document.getElementById('btnPrev');
+        const progressBar = document.getElementById('progressBar');
+        let currentSlide = 0;
+
+        function updateSlider() {
+            // Remove a classe active de todos
+            slides.forEach(slide => slide.classList.remove('active'));
+            // Adiciona no slide atual
+            slides[currentSlide].classList.add('active');
+
+            // Atualiza botões
+            btnPrev.disabled = currentSlide === 0;
+            btnNext.disabled = currentSlide === slides.length - 1;
+
+            // Atualiza barra de progresso
+            const progress = ((currentSlide) / (slides.length - 1)) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlider();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlider();
+            }
+        }
+
+        // Eventos de clique
+        btnNext.addEventListener('click', nextSlide);
+        btnPrev.addEventListener('click', prevSlide);
+
+        // Suporte a teclado (Setas)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Inicializa
+        updateSlider();
+    </script>
+</body>
+</html>
